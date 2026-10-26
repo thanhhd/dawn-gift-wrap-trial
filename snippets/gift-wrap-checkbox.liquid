@@ -1,0 +1,52 @@
+{% comment %}
+  Renders the gift-wrap checkbox with the design's checked and unchecked boxes.
+  The native input stays for keyboard, screen reader and form support, and CSS swaps the box that shows.
+
+  Accepts:
+  - label: {String} text beside the box.
+  - value: {String} value submitted when the box is ticked.
+  - name: {String} input name (optional).
+  - form: {String} id of the form the input submits with (optional).
+  - controls_id: {String} id of the element the box opens (optional).
+  - property: {String} line item property name, read by the cart script (optional).
+  - checked: {Boolean} start ticked (optional).
+
+  Usage:
+  {% render 'gift-wrap-checkbox', label: 'Wrap as a gift?', value: 'Yes', name: 'properties[Gift wrap]', form: product_form_id %}
+{% endcomment %}
+{%- liquid
+  assign box_classes = 'tw-pointer-events-none tw-rounded peer-focus-visible:tw-outline peer-focus-visible:tw-outline-2 peer-focus-visible:tw-outline-offset-2 peer-focus-visible:tw-outline-foreground/50'
+-%}
+
+<label class="tw-flex tw-cursor-pointer tw-items-center tw-gap-2 tw-text-sm">
+  <span class="tw-relative tw-flex tw-size-5 tw-shrink-0 tw-text-foreground">
+    <input
+      type="checkbox"
+      class="tw-peer tw-sr-only"
+      value="{{ value | escape_once }}"
+      {% if name != blank %}
+        name="{{ name | escape_once }}"
+      {% endif %}
+      {% if form != blank %}
+        form="{{ form }}"
+      {% endif %}
+      {% if controls_id != blank %}
+        aria-controls="{{ controls_id }}"
+      {% endif %}
+      {% if property != blank %}
+        data-property="{{ property | escape_once }}"
+      {% endif %}
+      {% if checked %}
+        checked
+      {% endif %}
+      data-gift-wrap-toggle
+    >
+    <span class="{{ box_classes }} tw-flex peer-checked:tw-hidden">
+      {{- 'icon-checkbox.svg' | inline_asset_content -}}
+    </span>
+    <span class="{{ box_classes }} tw-hidden peer-checked:tw-flex">
+      {{- 'icon-checkbox-checked.svg' | inline_asset_content -}}
+    </span>
+  </span>
+  {{ label }}
+</label>

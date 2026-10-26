@@ -166,7 +166,7 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
     ];
   }
 
-  updateQuantity(line, quantity, event, name, variantId) {
+  updateQuantity(line, quantity, event, name, variantId, properties) {
     const eventTarget = event.currentTarget instanceof CartRemoveButton ? 'clear' : 'change';
     const cartPerformanceUpdateMarker = CartPerformance.createStartingMarker(`${eventTarget}:user-action`);
 
@@ -184,6 +184,7 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
     const body = JSON.stringify({
       line,
       quantity,
+      properties,
       sections: sectionsToRender.map((section) => section.section),
       sections_url: window.location.pathname,
     });

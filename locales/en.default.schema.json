@@ -153,6 +153,20 @@
         }
       }
     },
+    "gift_wrap": {
+      "name": "Gift wrap",
+      "settings": {
+        "gift_wrap_to_max_length": {
+          "label": "\"To\" field character limit"
+        },
+        "gift_wrap_from_max_length": {
+          "label": "\"From\" field character limit"
+        },
+        "gift_wrap_message_max_length": {
+          "label": "Gift message character limit"
+        }
+      }
+    },
     "customer_accounts": {
       "name": "Customer accounts",
       "settings": {
@@ -1963,6 +1977,15 @@
             },
             "show_inventory_quantity": {
               "label": "Inventory count"
+            }
+          }
+        },
+        "gift_wrap": {
+          "name": "Gift wrap",
+          "settings": {
+            "show_inventory": {
+              "label": "Show inventory status",
+              "info": "Shows the stock status beside the checkbox. Remove the separate Inventory status block, as it can only appear once."
             }
           }
         },

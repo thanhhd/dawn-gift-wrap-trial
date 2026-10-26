@@ -1,0 +1,63 @@
+{% comment %}
+  Renders the stock status of the selected variant (e.g. "Low stock: 3 left").
+  Dawn swaps the element by its id when the variant changes, so render it only once per product section.
+
+  Accepts:
+  - product: {Object} product object.
+  - section_id: {String} id of the section to which this snippet belongs.
+  - inventory_threshold: {Number} quantity at or below which the status reads as low stock.
+  - show_inventory_quantity: {Boolean} if true the remaining quantity is shown.
+  - text_style: {String} 'body', 'subtitle' or 'uppercase' (optional).
+  - shopify_attributes: {String} the block's shopify_attributes, so the theme editor can select the block (optional).
+
+  Usage:
+  {% render 'inventory-status', product: product, section_id: section.id, inventory_threshold: block.settings.inventory_threshold, show_inventory_quantity: block.settings.show_inventory_quantity %}
+{% endcomment %}
+<p
+  class="product__inventory{% if text_style == 'uppercase' %} caption-with-letter-spacing{% elsif text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.inventory_management != 'shopify' %} visibility-hidden{% endif %}"
+  {{ shopify_attributes }}
+  id="Inventory-{{ section_id }}"
+  role="status"
+>
+  {%- if product.selected_or_first_available_variant.inventory_management == 'shopify' -%}
+    {%- if product.selected_or_first_available_variant.inventory_quantity > 0 -%}
+      {%- if product.selected_or_first_available_variant.inventory_quantity <= inventory_threshold -%}
+        <span class="svg-wrapper" style="color: rgb(238, 148, 65)">
+          {{- 'icon-inventory-status.svg' | inline_asset_content -}}
+        </span>
+        {%- if show_inventory_quantity -%}
+          {{-
+            'products.product.inventory_low_stock_show_count'
+            | t: quantity: product.selected_or_first_available_variant.inventory_quantity
+          -}}
+        {%- else -%}
+          {{- 'products.product.inventory_low_stock' | t -}}
+        {%- endif -%}
+      {%- else -%}
+        <span class="svg-wrapper" style="color: rgb(62, 214, 96)">
+          {{- 'icon-inventory-status.svg' | inline_asset_content -}}
+        </span>
+        {%- if show_inventory_quantity -%}
+          {{-
+            'products.product.inventory_in_stock_show_count'
+            | t: quantity: product.selected_or_first_available_variant.inventory_quantity
+          -}}
+        {%- else -%}
+          {{- 'products.product.inventory_in_stock' | t -}}
+        {%- endif -%}
+      {%- endif -%}
+    {%- else -%}
+      {%- if product.selected_or_first_available_variant.inventory_policy == 'continue' -%}
+        <span class="svg-wrapper" style="color: rgb(62, 214, 96)">
+          {{- 'icon-inventory-status.svg' | inline_asset_content -}}
+        </span>
+        {{- 'products.product.inventory_out_of_stock_continue_selling' | t -}}
+      {%- else -%}
+        <span class="svg-wrapper" style="color: rgb(200, 200, 200)">
+          {{- 'icon-inventory-status.svg' | inline_asset_content -}}
+        </span>
+        {{- 'products.product.inventory_out_of_stock' | t -}}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+</p>

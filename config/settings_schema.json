@@ -1466,5 +1466,37 @@
         "label": "t:settings_schema.customer_accounts.settings.customer_account_menu.label"
       }
     ]
+  },
+  {
+    "name": "t:settings_schema.gift_wrap.name",
+    "settings": [
+      {
+        "type": "range",
+        "id": "gift_wrap_to_max_length",
+        "label": "t:settings_schema.gift_wrap.settings.gift_wrap_to_max_length.label",
+        "min": 10,
+        "max": 100,
+        "step": 5,
+        "default": 40
+      },
+      {
+        "type": "range",
+        "id": "gift_wrap_from_max_length",
+        "label": "t:settings_schema.gift_wrap.settings.gift_wrap_from_max_length.label",
+        "min": 10,
+        "max": 100,
+        "step": 5,
+        "default": 40
+      },
+      {
+        "type": "range",
+        "id": "gift_wrap_message_max_length",
+        "label": "t:settings_schema.gift_wrap.settings.gift_wrap_message_max_length.label",
+        "min": 50,
+        "max": 500,
+        "step": 10,
+        "default": 250
+      }
+    ]
   }
 ]

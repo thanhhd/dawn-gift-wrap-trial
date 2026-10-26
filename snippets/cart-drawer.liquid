@@ -10,6 +10,16 @@
 
 <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+{{ 'tailwind.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cart-gift-wrap.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign gift_wrap_names = 'products.product.gift_wrap.wrap_property' | t
+  assign to_name = 'products.product.gift_wrap.to_property' | t
+  assign from_name = 'products.product.gift_wrap.from_property' | t
+  assign message_name = 'products.product.gift_wrap.message_property' | t
+  assign gift_wrap_names = gift_wrap_names | append: '|' | append: to_name | append: '|' | append: from_name | append: '|' | append: message_name | split: '|'
+-%}
 
 <style>
   .drawer {
@@ -202,6 +212,9 @@
                               {%- endif -%}
 
                               {%- for property in item.properties -%}
+                                {%- if gift_wrap_names contains property.first -%}
+                                  {%- continue -%}
+                                {%- endif -%}
                                 {%- assign property_first_char = property.first | slice: 0 -%}
                                 {%- if property.last != blank and property_first_char != '_' -%}
                                   <div class="product-option">
@@ -473,6 +486,14 @@
                             </div>
                           </quantity-popover>
                         </td>
+                        {%- capture gift_wrap_html -%}
+                          {%- render 'cart-gift-wrap', item: item, line: forloop.index, id_prefix: 'CartDrawer' -%}
+                        {%- endcapture -%}
+                        {%- if gift_wrap_html != blank -%}
+                          <td class="cart-item__gift-wrap tw-col-span-full" role="cell">
+                            {{ gift_wrap_html }}
+                          </td>
+                        {%- endif -%}
                       </tr>
                     {%- endfor -%}
                   </tbody>

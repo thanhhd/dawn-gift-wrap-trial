@@ -1,0 +1,132 @@
+{% comment %}
+  Renders the gift-wrap details of a cart line, with a form to edit them in place.
+  Renders nothing when the line was not added with gift wrap.
+
+  Accepts:
+  - item: {Object} the cart line item.
+  - line: {Number} 1-based position of the line in the cart.
+  - id_prefix: {String} keeps field ids unique where this renders more than once, e.g. cart drawer and cart page.
+
+  Usage:
+  {% render 'cart-gift-wrap', item: item, line: forloop.index, id_prefix: 'CartDrawer' %}
+{% endcomment %}
+{%- liquid
+  assign wrap_property = 'products.product.gift_wrap.wrap_property' | t
+  assign wrap_value = 'products.product.gift_wrap.wrap_value' | t
+  assign to_property = 'products.product.gift_wrap.to_property' | t
+  assign from_property = 'products.product.gift_wrap.from_property' | t
+  assign message_property = 'products.product.gift_wrap.message_property' | t
+-%}
+
+{%- if item.properties[wrap_property] == wrap_value -%}
+  {%- liquid
+    assign to_value = item.properties[to_property]
+    assign from_value = item.properties[from_property]
+    assign message_value = item.properties[message_property]
+
+    assign wrap_label = 'products.product.gift_wrap.label' | t
+    assign to_label = 'products.product.gift_wrap.to_label' | t
+    assign from_label = 'products.product.gift_wrap.from_label' | t
+    assign message_label = 'products.product.gift_wrap.message_label' | t
+    assign to_placeholder = 'products.product.gift_wrap.to_placeholder' | t
+    assign from_placeholder = 'products.product.gift_wrap.from_placeholder' | t
+    assign message_placeholder = 'products.product.gift_wrap.message_placeholder' | t
+
+    assign to_id = id_prefix | append: '-GiftTo-' | append: line
+    assign from_id = id_prefix | append: '-GiftFrom-' | append: line
+    assign message_id = id_prefix | append: '-GiftMessage-' | append: line
+
+    assign summary_parts = ''
+    if to_value != blank
+      assign to_text = to_value | escape_once
+      assign summary_parts = summary_parts | append: to_label | append: ': ' | append: to_text | append: '||'
+    endif
+    if from_value != blank
+      assign from_text = from_value | escape_once
+      assign summary_parts = summary_parts | append: from_label | append: ': ' | append: from_text | append: '||'
+    endif
+    if message_value != blank
+      assign message_text = 'products.product.gift_wrap.summary_message' | t: message: message_value
+      assign summary_parts = summary_parts | append: message_text | append: '||'
+    endif
+    assign summary = summary_parts | split: '||' | join: ' / '
+
+    assign link_button_classes = 'tw-inline-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-border-0 tw-bg-transparent tw-p-0 tw-font-inherit tw-text-sm tw-text-foreground tw-underline'
+  -%}
+
+  <cart-gift-wrap
+    class="tw-block tw-bg-foreground/5 tw-p-4"
+    data-line="{{ line }}"
+    data-quantity="{{ item.quantity }}"
+    data-properties="{{ item.properties | json | escape }}"
+  >
+    <div data-gift-wrap-summary>
+      <div class="tw-flex tw-items-center tw-justify-between tw-gap-4">
+        <p class="tw-m-0 tw-flex tw-items-center tw-gap-2 tw-text-sm">
+          <span class="tw-flex tw-size-5 tw-shrink-0 tw-text-foreground">
+            {{- 'icon-checkbox-checked.svg' | inline_asset_content -}}
+          </span>
+          {{ wrap_label }}
+        </p>
+        <button
+          type="button"
+          name="gift-wrap-edit"
+          class="{{ link_button_classes }}"
+          aria-label="{{ 'products.product.gift_wrap.edit_aria_label' | t: product: item.product.title }}"
+          data-gift-wrap-action="edit"
+        >
+          {{ 'products.product.gift_wrap.edit' | t }}
+          <span class="svg-wrapper tw-size-4">{{- 'icon-edit.svg' | inline_asset_content -}}</span>
+        </button>
+      </div>
+      <p class="tw-mb-0 tw-mt-3 tw-text-sm">{{ summary }}</p>
+    </div>
+
+    <div data-gift-wrap-form hidden>
+      <div class="tw-flex tw-items-center tw-justify-between tw-gap-4">
+        {%- render 'gift-wrap-checkbox',
+          label: wrap_label,
+          value: wrap_value,
+          property: wrap_property,
+          checked: true
+        -%}
+        <button type="button" class="{{ link_button_classes }}" data-gift-wrap-action="cancel">
+          {{ 'products.product.gift_wrap.cancel' | t }}
+          <span class="svg-wrapper tw-size-4">{{- 'icon-close-small.svg' | inline_asset_content -}}</span>
+        </button>
+      </div>
+
+      <div class="tw-mt-4 tw-flex tw-flex-col tw-gap-4">
+        {%- render 'gift-wrap-field',
+          id: to_id,
+          label: to_label,
+          name: to_property,
+          placeholder: to_placeholder,
+          max_length: settings.gift_wrap_to_max_length,
+          value: to_value
+        -%}
+        {%- render 'gift-wrap-field',
+          id: from_id,
+          label: from_label,
+          name: from_property,
+          placeholder: from_placeholder,
+          max_length: settings.gift_wrap_from_max_length,
+          value: from_value
+        -%}
+        {%- render 'gift-wrap-field',
+          id: message_id,
+          label: message_label,
+          name: message_property,
+          placeholder: message_placeholder,
+          max_length: settings.gift_wrap_message_max_length,
+          value: message_value,
+          multiline: true
+        -%}
+      </div>
+
+      <button type="button" class="button button--full-width tw-mt-4" data-gift-wrap-action="update">
+        {{ 'products.product.gift_wrap.update' | t }}
+      </button>
+    </div>
+  </cart-gift-wrap>
+{%- endif -%}

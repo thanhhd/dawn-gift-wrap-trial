@@ -1,0 +1,60 @@
+{% comment %}
+  Renders a labelled gift-wrap field: a single line input, or a textarea when multiline is true.
+  With a product form id the field submits with that form as a line item property. Without one it is a
+  plain field that the cart script reads through data-property.
+
+  Accepts:
+  - id: {String} unique id of the field.
+  - label: {String} visible label.
+  - name: {String} line item property name shown in the cart and the order.
+  - placeholder: {String} placeholder text.
+  - max_length: {Number} maximum number of characters.
+  - product_form_id: {String} id of the product form the field submits with (optional).
+  - value: {String} text the field starts with (optional).
+  - multiline: {Boolean} render a textarea instead of an input (optional).
+
+  Usage:
+  {% render 'gift-wrap-field', id: 'GiftTo-123', label: 'To', name: 'Gift to', placeholder: 'Recipient', max_length: 40, product_form_id: product_form_id %}
+{% endcomment %}
+{%- liquid
+  assign hint_id = id | append: '-Hint'
+  assign field_classes = 'tw-block tw-w-full tw-rounded tw-border tw-border-solid tw-border-foreground/25 tw-bg-background tw-px-3 tw-py-2.5 tw-font-inherit tw-text-sm tw-text-foreground placeholder:tw-text-foreground/50'
+-%}
+
+<div>
+  <label for="{{ id }}" class="tw-mb-2 tw-block tw-text-sm">{{ label }}</label>
+  {%- if multiline -%}
+    <textarea
+      id="{{ id }}"
+      {% if product_form_id != blank %}
+        name="properties[{{ name | escape_once }}]"
+        form="{{ product_form_id }}"
+      {% endif %}
+      data-property="{{ name | escape_once }}"
+      rows="4"
+      maxlength="{{ max_length }}"
+      placeholder="{{ placeholder | escape_once }}"
+      aria-describedby="{{ hint_id }}"
+      class="{{ field_classes }} tw-resize-y"
+    >{{ value | escape_once }}</textarea>
+  {%- else -%}
+    <input
+      type="text"
+      id="{{ id }}"
+      {% if product_form_id != blank %}
+        name="properties[{{ name | escape_once }}]"
+        form="{{ product_form_id }}"
+      {% endif %}
+      data-property="{{ name | escape_once }}"
+      value="{{ value | escape_once }}"
+      maxlength="{{ max_length }}"
+      placeholder="{{ placeholder | escape_once }}"
+      autocomplete="off"
+      aria-describedby="{{ hint_id }}"
+      class="{{ field_classes }}"
+    >
+  {%- endif -%}
+  <span id="{{ hint_id }}" class="visually-hidden">
+    {{- 'products.product.gift_wrap.max_length_hint' | t: count: max_length -}}
+  </span>
+</div>
